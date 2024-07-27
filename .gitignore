@@ -1,0 +1,13 @@
+# Python build file
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+
+# Custom file
+.vscode/
+.venv
+__test_*.py
