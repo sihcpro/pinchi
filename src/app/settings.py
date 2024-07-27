@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from os import getenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +26,9 @@ SECRET_KEY = "django-insecure-5zv5i0&4njf=v7^fxh(3-zc7(w+f_@8x^(=c0zcaefdohx6c^z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
+AUTH_USER_MODEL = "user.User"
 
 # Application definition
 
@@ -37,6 +39,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Third-party
+    "rest_framework",
+    # Internal apps
+    "user",
+    "product",
 ]
 
 MIDDLEWARE = [
@@ -75,8 +82,12 @@ WSGI_APPLICATION = "app.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": getenv("POSTGRES_DB", "pinchi"),
+        "USER": getenv("POSTGRES_USER", "postgres"),
+        "PASSWORD": getenv("POSTGRES_PASSWORD", "password"),
+        "HOST": getenv("POSTGRES_HOST", "localhost"),
+        "PORT": getenv("POSTGRES_PORT", "5432"),
     }
 }
 
