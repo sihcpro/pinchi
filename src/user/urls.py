@@ -4,4 +4,4 @@ from .views import UserViewSet
 
 router = routers.DefaultRouter()
 
-router.register(r"", UserViewSet)
+router.register(r"v1/users", UserViewSet)

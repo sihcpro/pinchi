@@ -2,27 +2,16 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from helpers.models import TrackingModel
+from .enums import UserType, UserCategory
 
 
 class User(AbstractUser, TrackingModel):
-    INTERNAL_STAFF = "I"
-    EXTERNAL_CUSTOMER = "E"
-    TYPES = (
-        (INTERNAL_STAFF, "INTERNAL_STAFF"),
-        (EXTERNAL_CUSTOMER, "EXTERNAL_CUSTOMER"),
+    type = models.CharField(
+        max_length=1, default=UserType.EXTERNAL_CUSTOMER.value, choices=UserType.list()
     )
-
-    GOLD = "G"
-    SILVER = "S"
-    BRONZE = "B"
-    CATEGORIES = (
-        (GOLD, "GOLD"),
-        (SILVER, "SILVER"),
-        (BRONZE, "BRONZE"),
+    category = models.SmallIntegerField(
+        default=UserCategory.BRONZE.value, choices=UserCategory.list()
     )
-
-    type = models.CharField(max_length=1, default=EXTERNAL_CUSTOMER, choices=TYPES)
-    category = models.CharField(max_length=1, default=BRONZE, choices=CATEGORIES)
 
     _created = models.DateTimeField(auto_now_add=True)
     _updated = models.DateTimeField(auto_now=True)

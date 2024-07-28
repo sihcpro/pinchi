@@ -21,12 +21,15 @@ from rest_framework.routers import DefaultRouter
 
 from user.urls import router as user_router
 from product.urls import router as product_router
+from order.urls import router as order_router
+from cart.urls import router as cart_router
 
 
 router = DefaultRouter()
 router.registry.extend(user_router.registry)
 router.registry.extend(product_router.registry)
-
+router.registry.extend(order_router.registry)
+router.registry.extend(cart_router.registry)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
