@@ -146,6 +146,8 @@ REST_FRAMEWORK = {
         if DEBUG
         else "helpers.exception_handlers.json_exception_handler"
     ),
+    "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework.authentication.SessionAuthentication"],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
 }
 
 

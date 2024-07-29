@@ -1,6 +1,6 @@
 from django.db import transaction
 from rest_framework import viewsets
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import action
 
 from helpers.exceptions import BadRequestException
@@ -14,7 +14,7 @@ from .serializers import CartItemSerializer
 class CartItemViewSet(viewsets.ModelViewSet):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
-    # authentication_classes = [TokenAuthentication, ]
+    authentication_classes = [SessionAuthentication]
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)

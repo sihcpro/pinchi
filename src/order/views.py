@@ -1,6 +1,12 @@
+from django.db import transaction
 from django.db.models import Q
 from rest_framework import viewsets
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.decorators import action
 
+from helpers.exceptions import BadRequestException
+from helpers.responses import AppResponse
+from order.enums import OrderStatus
 from user.enums import UserCategory
 from user.models import User
 from .models import Order, OrderItem, ProductDiscount, UsedDiscount, UserDiscount
@@ -16,11 +22,13 @@ from .serializers import (
 class ProductDiscountViewSet(viewsets.ModelViewSet):
     queryset = ProductDiscount.objects.all()
     serializer_class = ProductDiscountSerializer
+    permission_classes = []
 
 
 class UserDiscountViewSet(viewsets.ModelViewSet):
     queryset = UserDiscount.objects.all()
     serializer_class = UserDiscountSerializer
+    permission_classes = []
 
     def get_queryset(self):
         # Query for anonymous users
@@ -43,8 +51,6 @@ class UsedDiscountViewSet(viewsets.ModelViewSet):
     serializer_class = UsedDiscountSerializer
 
     def get_queryset(self):
-        if self.request.user is None:
-            return self.queryset.filter(user=None)
         return self.queryset.filter(user=self.request.user)
 
 
@@ -53,8 +59,6 @@ class OrderItemViewSet(viewsets.ModelViewSet):
     serializer_class = OrderItemSerializer
 
     def get_queryset(self):
-        if self.request.user is None:
-            return self.queryset.filter(order__user=None)
         return self.queryset.filter(order__user=self.request.user)
 
 
@@ -63,6 +67,25 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        if self.request.user is None:
-            return self.queryset.filter(user=None)
         return self.queryset.filter(user=self.request.user)
+
+    @action(detail=True, methods=["post"])
+    @transaction.atomic
+    def finish(self, request, pk):
+        order = Order.objects.filter(id=pk, status=OrderStatus.ACCEPTED.value).first()
+        if not order:
+            raise BadRequestException(400006, message="Shipping Order not found", request=request)
+        order.status = OrderStatus.SHIPPED.value
+        order.save()
+
+        total_success_order = Order.objects.filter(
+            user=request.user, status=OrderStatus.SHIPPED.value
+        ).count()
+        if total_success_order >= 50:
+            request.user.category = UserCategory.GOLD.value
+            request.user.save()
+        elif total_success_order >= 20:
+            request.user.category = UserCategory.SILVER.value
+            request.user.save()
+
+        return AppResponse({})
