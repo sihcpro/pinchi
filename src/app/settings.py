@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-5zv5i0&4njf=v7^fxh(3-zc7(w+f_@8x^(=c0zcaefdohx6c^z"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = getenv("DEBUG", "") == "True"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # Third-party
     "rest_framework",
     # Internal apps
+    # "helpers",
     "user",
     "product",
     "order",
@@ -52,7 +53,8 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
+    "helpers.middlewares.DisableCSRFMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -134,6 +136,17 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# REST Framework settings
+
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": (
+        "helpers.exception_handlers.debug_json_exception_handler"
+        if DEBUG
+        else "helpers.exception_handlers.json_exception_handler"
+    ),
+}
 
 
 # Custom settings

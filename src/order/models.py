@@ -54,19 +54,6 @@ class UserDiscount(DiscountInfo, TrackingModel):
         db_table = "user_discount"
 
 
-class UsedDiscount(TrackingModel):
-    cancelled = models.BooleanField(default=False)
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    product_discount = models.ForeignKey(ProductDiscount, on_delete=models.CASCADE, null=True)
-    user_discount = models.ForeignKey(UserDiscount, on_delete=models.CASCADE, null=True)
-
-    class Meta:
-        managed = True
-        db_table = "used_discount"
-
-
 class Order(TrackingModel):
     quantity = models.IntegerField()
     total = models.DecimalField(max_digits=10, decimal_places=2)
@@ -91,8 +78,20 @@ class OrderItem(TrackingModel):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
-    discount = models.OneToOneField(UsedDiscount, on_delete=models.CASCADE)
-
     class Meta:
         managed = True
         db_table = "order_item"
+
+
+class UsedDiscount(TrackingModel):
+    cancelled = models.BooleanField(default=False)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    order = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
+
+    product_discount = models.ForeignKey(ProductDiscount, on_delete=models.CASCADE, null=True)
+    user_discount = models.ForeignKey(UserDiscount, on_delete=models.CASCADE, null=True)
+
+    class Meta:
+        managed = True
+        db_table = "used_discount"

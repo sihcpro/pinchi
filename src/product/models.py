@@ -1,4 +1,5 @@
 from django.db import models
+
 from helpers.models import TrackingModel
 
 
@@ -22,7 +23,8 @@ class Category(TrackingModel):
 class Product(TrackingModel):
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    description = models.TextField()
+    quantity = models.IntegerField(default=0)
+    description = models.TextField(default="")
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     class Meta:

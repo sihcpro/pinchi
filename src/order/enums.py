@@ -3,6 +3,7 @@ from helpers.enums import ExtendedEnum
 
 class OrderStatus(ExtendedEnum):
     PENDING = "P"
+    ACCEPTED = "A"
     SHIPPED = "S"
     CANCELED = "C"
 
