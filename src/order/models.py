@@ -87,7 +87,7 @@ class UsedDiscount(TrackingModel):
     cancelled = models.BooleanField(default=False)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    order = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
+    order = models.ForeignKey(OrderItem, on_delete=models.CASCADE, related_name="discounts")
 
     product_discount = models.ForeignKey(ProductDiscount, on_delete=models.CASCADE, null=True)
     user_discount = models.ForeignKey(UserDiscount, on_delete=models.CASCADE, null=True)

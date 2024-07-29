@@ -11,6 +11,7 @@ from user.enums import UserCategory
 from user.models import User
 from .models import Order, OrderItem, ProductDiscount, UsedDiscount, UserDiscount
 from .serializers import (
+    OrderDetailSerializer,
     OrderItemSerializer,
     OrderSerializer,
     ProductDiscountSerializer,
@@ -68,6 +69,9 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
+
+    def retrieve(self, request, *args, **kwargs):
+        return AppResponse(OrderDetailSerializer(self.get_object()).data)
 
     @action(detail=True, methods=["post"])
     @transaction.atomic

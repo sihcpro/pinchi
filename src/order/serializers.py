@@ -4,7 +4,6 @@ from product.serializers import ProductSerializer
 from user.serializers import UserSerializer
 from .models import Order, OrderItem, ProductDiscount, UsedDiscount, UserDiscount
 
-
 discount_info_fields = [
     "id",
     "code",
@@ -39,6 +38,8 @@ class UsedDiscountSerializer(serializers.ModelSerializer):
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    discounts = UsedDiscountSerializer(many=True)
+
     class Meta:
         model = OrderItem
         fields = [
@@ -48,7 +49,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "final_total",
             "order",
             "product",
-            "discount",
+            "discounts",
             "_created",
             "_updated",
         ]
@@ -56,6 +57,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data["product"] = ProductSerializer(instance.product).data
+        # data["discounts"] = UsedDiscountSerializer(instance.discounts).data
         return data
 
 
@@ -64,6 +66,13 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = ["id", "quantity", "total", "final_total", "status", "_created", "_updated"]
 
+
+class OrderDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ["id", "quantity", "total", "final_total", "status", "_created", "_updated"]
+
     def to_representation(self, instance):
         data = super().to_representation(instance)
+        data["items"] = OrderItemSerializer(instance.orderitem_set.all(), many=True).data
         return data
